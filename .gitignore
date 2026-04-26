@@ -1,0 +1,29 @@
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
+# Runtime data (progress and index — machine-specific)
+dvr_progress.json
+dvr_index.csv
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Logs
+*.log
+dvr_log_*.txt
+dvr_report_*.html
+dvr_report_*.csv
