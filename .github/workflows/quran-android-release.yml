@@ -71,6 +71,43 @@ jobs:
         working-directory: ${{ env.APP_DIR }}
         run: flutter pub get
 
+      # ── Download required assets (fonts + full Quran seed data) ──────────────
+      #
+      # Fonts are not committed to the repository (binary files, ~3 MB total).
+      # The full ayahs.json (6,236 verses) replaces the stub included in the repo.
+      - name: Download Arabic fonts
+        run: |
+          FONTS="${{ env.APP_DIR }}/assets/fonts"
+          mkdir -p "$FONTS"
+
+          # Amiri (SIL Open Font License — aliftype/amiri)
+          curl -fsSL --retry 3 \
+            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Regular.ttf" \
+            -o "$FONTS/Amiri-Regular.ttf"
+          curl -fsSL --retry 3 \
+            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Bold.ttf" \
+            -o "$FONTS/Amiri-Bold.ttf"
+
+          # NotoNaskhArabic (SIL Open Font License — notofonts/arabic)
+          curl -fsSL --retry 3 \
+            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Regular.ttf" \
+            -o "$FONTS/NotoNaskhArabic-Regular.ttf"
+          curl -fsSL --retry 3 \
+            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Bold.ttf" \
+            -o "$FONTS/NotoNaskhArabic-Bold.ttf"
+
+          # KFGQPC Uthmanic Hafs — freely distributed by King Fahd Complex
+          curl -fsSL --retry 3 \
+            "https://github.com/quran/quran-ios/raw/main/Quran/Assets.xcassets/Fonts/KFGQPC-Uthmanic-Script-Hafs-Regular.ttf" \
+            -o "$FONTS/UthmanicHafs_V22.ttf"
+
+          ls -lh "$FONTS"
+
+      - name: Download full Quran seed data
+        run: |
+          python3 ${{ env.APP_DIR }}/scripts/prepare_seed_data.py \
+            --output ${{ env.APP_DIR }}/assets/json/
+
       # ── Code generation (Drift + Riverpod) ─────────────────────────────────
       - name: Generate Drift/Riverpod code
         working-directory: ${{ env.APP_DIR }}

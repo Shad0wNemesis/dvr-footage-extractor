@@ -64,9 +64,11 @@ app.*.symbols
 **/ios/Runner/GeneratedPluginRegistrant.*
 **/ios/Runner/Runner.entitlements
 
-# Assets (downloaded at build time)
+# Assets (downloaded at build time — see scripts/download_assets.sh)
 assets/fonts/*.ttf
 assets/database/*.db
+# The full ayahs.json (6,236 verses, ~3 MB) is downloaded by prepare_seed_data.py.
+# The stub assets/json/ayahs.json (Al-Fatiha only) IS committed for local dev / CI cache.
 
 # Coverage
 coverage/
