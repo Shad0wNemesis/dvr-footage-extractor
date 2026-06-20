@@ -1,5 +1,7 @@
 name: quran_app
-description: A free and advanced Quran app for iOS and Android
+description: >
+  Noor Al-Quran — A next-generation, local-first, AI-powered Quran application.
+  Free forever. No ads. Open-source spirit.
 
 publish_to: 'none'
 
@@ -13,41 +15,43 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # State Management
+  # ── State Management ────────────────────────────────────────
   flutter_riverpod: ^2.4.9
   riverpod_annotation: ^2.3.3
 
-  # Navigation
+  # ── Navigation ──────────────────────────────────────────────
   go_router: ^13.2.0
 
-  # HTTP Client
+  # ── Local Database (Drift = type-safe SQLite ORM) ───────────
+  # Replaces raw sqflite for compile-time query safety and DAOs.
+  drift: ^2.15.0
+  drift_flutter: ^0.2.1           # Flutter-specific adapters
+  sqlite3_flutter_libs: ^0.5.22   # Bundled sqlite3 native binary
+  path_provider: ^2.1.2
+  path: ^1.9.0
+
+  # ── HTTP Client (AI microservices + Quran.com API) ──────────
   dio: ^5.4.0
 
-  # SQLite (offline)
-  sqflite: ^2.3.0
-  path: ^1.9.0
-  path_provider: ^2.1.2
-
-  # Audio
+  # ── Audio ───────────────────────────────────────────────────
   just_audio: ^0.9.36
   just_audio_background: ^0.0.1-beta.11
   audio_session: ^0.1.18
 
-  # Prayer Times
+  # ── Prayer Times ────────────────────────────────────────────
   adhan: ^1.0.3
 
-  # Qibla
+  # ── Qibla & Sensors ─────────────────────────────────────────
   flutter_qiblah: ^2.1.1
   sensors_plus: ^4.0.2
 
-  # Location
+  # ── Location ────────────────────────────────────────────────
   geolocator: ^11.0.0
 
-  # Storage
+  # ── Persistent KV Storage ───────────────────────────────────
   shared_preferences: ^2.2.3
-  hive_flutter: ^1.1.0
 
-  # UI
+  # ── UI Components ───────────────────────────────────────────
   flutter_svg: ^2.0.9
   cached_network_image: ^3.3.1
   shimmer: ^3.0.0
@@ -55,7 +59,11 @@ dependencies:
   percent_indicator: ^4.2.3
   flutter_animate: ^4.3.0
 
-  # Utilities
+  # ── Camera / AR / Vision ────────────────────────────────────
+  camera: ^0.10.5+9
+  image: ^4.1.7                   # In-isolate frame processing
+
+  # ── Utilities ───────────────────────────────────────────────
   connectivity_plus: ^5.0.2
   intl: ^0.19.0
   collection: ^1.18.0
@@ -64,13 +72,19 @@ dependencies:
   json_annotation: ^4.8.1
   rxdart: ^0.27.7
   logger: ^2.0.2+1
+  uuid: ^4.3.3                    # Stable bookmark / note IDs
+  crypto: ^3.0.3                  # Asset integrity verification
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
-  build_runner: ^2.4.7
+  build_runner: ^2.4.8
+  # Drift code generation
+  drift_dev: ^2.15.0
+  # Riverpod code generation
   riverpod_generator: ^2.3.9
+  # Data class generation
   freezed: ^2.4.6
   json_serializable: ^6.7.1
 
@@ -81,6 +95,7 @@ flutter:
     - assets/fonts/
     - assets/images/
     - assets/database/
+    - assets/json/
 
   fonts:
     - family: Amiri
