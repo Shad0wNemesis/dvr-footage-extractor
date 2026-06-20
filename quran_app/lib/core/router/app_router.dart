@@ -9,23 +9,64 @@ import '../../features/prayer/screens/prayer_times_screen.dart';
 import '../../features/qibla/screens/qibla_screen.dart';
 import '../../features/bookmarks/screens/bookmarks_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
+import '../../features/splash/splash_screen.dart';
+import '../../features/semantic_search/screens/semantic_search_screen.dart';
+import '../../features/hifz/screens/hifz_screen.dart';
+import '../../features/recitation_checker/screens/recitation_screen.dart';
+import '../../features/ar_scanner/screens/ar_scanner_screen.dart';
 
 class AppRoutes {
+  static const splash = '/splash';
   static const home = '/';
   static const surahList = '/quran';
   static const reader = '/quran/:surahId';
+  static const readerPage = '/quran/page/:pageNumber';
   static const search = '/search';
+  static const semanticSearch = '/semantic-search';
   static const tafsir = '/tafsir/:verseKey';
   static const prayer = '/prayer';
   static const qibla = '/qibla';
   static const bookmarks = '/bookmarks';
   static const settings = '/settings';
+  static const hifz = '/hifz';
+  static const recitation = '/recitation/:verseKey';
+  static const arScanner = '/scanner';
 }
 
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.home,
+  initialLocation: AppRoutes.splash,
   debugLogDiagnostics: false,
   routes: [
+    // Splash is outside the ShellRoute — no bottom nav during init.
+    GoRoute(
+      path: AppRoutes.splash,
+      pageBuilder: (context, state) => _buildPage(state, const SplashScreen()),
+    ),
+
+    // Full-screen routes (no bottom nav).
+    GoRoute(
+      path: AppRoutes.arScanner,
+      pageBuilder: (context, state) => _buildPage(state, const ARScannerScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.recitation,
+      pageBuilder: (context, state) {
+        final verseKey = Uri.decodeComponent(
+            state.pathParameters['verseKey'] ?? '1:1');
+        return _buildPage(state, RecitationScreen(verseKey: verseKey));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.semanticSearch,
+      pageBuilder: (context, state) =>
+          _buildPage(state, const SemanticSearchScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.hifz,
+      pageBuilder: (context, state) => _buildPage(state, const HifzScreen()),
+    ),
+
+    // Main shell with bottom nav.
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),
       routes: [
@@ -45,6 +86,17 @@ final appRouter = GoRouter(
             return _buildPage(
               state,
               QuranReaderScreen(surahId: surahId, initialVerse: verseNumber),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.readerPage,
+          pageBuilder: (context, state) {
+            final pageNumber = int.parse(state.pathParameters['pageNumber'] ?? '1');
+            // Open surah 1 as a fallback; a full page→surah map is a future enhancement.
+            return _buildPage(
+              state,
+              QuranReaderScreen(surahId: 1, initialVerse: pageNumber),
             );
           },
         ),

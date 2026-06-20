@@ -187,39 +187,114 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       (icon: Icons.explore, label: 'Qibla', color: AppColors.gold, route: '/qibla'),
     ];
 
-    return Row(
-      children: actions.map((action) {
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: GestureDetector(
-              onTap: () => context.go(action.route),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: action.color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: action.color.withOpacity(0.2)),
-                ),
-                child: Column(
-                  children: [
-                    Icon(action.icon, color: action.color, size: 24),
-                    const SizedBox(height: 6),
-                    Text(
-                      action.label,
-                      style: TextStyle(
-                        color: action.color,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
+    final aiActions = [
+      (icon: Icons.auto_awesome, label: 'AI Search', color: AppColors.primaryLight, route: '/semantic-search'),
+      (icon: Icons.psychology, label: 'Hifz', color: AppColors.gold, route: '/hifz'),
+      (icon: Icons.mic, label: 'Recite', color: const Color(0xFF8B5CF6), route: '/recitation/1:1'),
+      (icon: Icons.camera_alt_outlined, label: 'Scanner', color: AppColors.info, route: '/scanner'),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Core actions row
+        Row(
+          children: actions.map((action) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: GestureDetector(
+                  onTap: () => context.go(action.route),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: action.color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: action.color.withOpacity(0.2)),
                     ),
-                  ],
+                    child: Column(
+                      children: [
+                        Icon(action.icon, color: action.color, size: 24),
+                        const SizedBox(height: 6),
+                        Text(
+                          action.label,
+                          style: TextStyle(
+                            color: action.color,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 10),
+
+        // AI features row
+        Row(
+          children: aiActions.map((action) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: GestureDetector(
+                  onTap: () => context.push(action.route),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          action.color.withOpacity(0.12),
+                          action.color.withOpacity(0.06),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: action.color.withOpacity(0.25)),
+                    ),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Icon(action.icon, color: action.color, size: 22),
+                            Positioned(
+                              top: -2,
+                              right: -2,
+                              child: Container(
+                                width: 7,
+                                height: 7,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primaryLight,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          action.label,
+                          style: TextStyle(
+                            color: action.color,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 

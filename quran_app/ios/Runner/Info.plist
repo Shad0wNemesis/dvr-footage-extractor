@@ -43,6 +43,14 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 
+	<!-- Microphone permission for AI Tajweed recitation checker -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Noor Al-Quran needs microphone access to evaluate your Quran recitation for Tajweed accuracy.</string>
+
+	<!-- Camera permission for Mus'haf AR scanner -->
+	<key>NSCameraUsageDescription</key>
+	<string>Noor Al-Quran uses the camera to detect the Mus'haf page you are reading and show contextual information.</string>
+
 	<!-- Location permissions for prayer times & qibla -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Noor Al-Quran needs your location to calculate accurate prayer times and Qibla direction.</string>
@@ -80,6 +88,14 @@
 				<false/>
 				<key>NSIncludesSubdomains</key>
 				<true/>
+			</dict>
+			<!-- Local AI microservice — HTTP on loopback is permitted -->
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<false/>
 			</dict>
 		</dict>
 	</dict>
