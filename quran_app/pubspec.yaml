@@ -1,0 +1,98 @@
+name: quran_app
+description: A free and advanced Quran app for iOS and Android
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # HTTP Client
+  dio: ^5.4.0
+
+  # SQLite (offline)
+  sqflite: ^2.3.0
+  path: ^1.9.0
+  path_provider: ^2.1.2
+
+  # Audio
+  just_audio: ^0.9.36
+  just_audio_background: ^0.0.1-beta.11
+  audio_session: ^0.1.18
+
+  # Prayer Times
+  adhan: ^1.0.3
+
+  # Qibla
+  flutter_qiblah: ^2.1.1
+  sensors_plus: ^4.0.2
+
+  # Location
+  geolocator: ^11.0.0
+
+  # Storage
+  shared_preferences: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # UI
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  lottie: ^3.0.0
+  percent_indicator: ^4.2.3
+  flutter_animate: ^4.3.0
+
+  # Utilities
+  connectivity_plus: ^5.0.2
+  intl: ^0.19.0
+  collection: ^1.18.0
+  equatable: ^2.0.5
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  rxdart: ^0.27.7
+  logger: ^2.0.2+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.7
+  riverpod_generator: ^2.3.9
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - assets/database/
+
+  fonts:
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+    - family: UthmanicHafs
+      fonts:
+        - asset: assets/fonts/UthmanicHafs_V22.ttf
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/fonts/NotoNaskhArabic-Regular.ttf
+        - asset: assets/fonts/NotoNaskhArabic-Bold.ttf
+          weight: 700
