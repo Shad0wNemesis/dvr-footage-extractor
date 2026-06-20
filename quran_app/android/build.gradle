@@ -21,15 +21,13 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-subprojects {
-    project.evaluationDependsOn(':app')
-}
 
 // AGP 8+ requires every Android library module to declare a namespace.
 // Older Flutter plugins (e.g. flutter_qiblah) only set `package` in their
-// AndroidManifest.xml.  Read it here and inject it so the build doesn't fail.
-subprojects {
-    afterEvaluate { proj ->
+// AndroidManifest.xml.  Register afterEvaluate BEFORE evaluationDependsOn
+// so the hook fires during the eager evaluation triggered below.
+subprojects { proj ->
+    proj.afterEvaluate {
         if (proj.plugins.hasPlugin('com.android.library')) {
             def hasNs = false
             try { hasNs = (proj.android.namespace != null) } catch (Exception ignored) {}
@@ -49,6 +47,10 @@ subprojects {
             }
         }
     }
+}
+
+subprojects {
+    project.evaluationDependsOn(':app')
 }
 
 tasks.register("clean", Delete) {
