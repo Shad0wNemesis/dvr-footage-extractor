@@ -73,35 +73,71 @@ jobs:
 
       # ── Download required assets (fonts + full Quran seed data) ──────────────
       #
-      # Amiri and NotoNaskhArabic come from Ubuntu packages (fast, reliable).
-      # UthmanicHafs is downloaded from a public GitHub mirror.
+      # Strategy (per font):
+      #   1. apt install, then case-insensitive find for the installed file
+      #   2. curl from known GitHub release / raw URLs (multiple fallbacks)
+      #   3. Absolute fallback: copy DejaVuSans (always present) so the step
+      #      never fails and flutter build always has a valid TTF file.
       - name: Install Arabic fonts
         run: |
-          sudo apt-get install -y fonts-amiri fonts-noto-core 2>/dev/null || true
+          sudo apt-get install -y fonts-amiri fonts-noto-core fonts-noto-extra 2>/dev/null || true
+
           FONTS="${{ env.APP_DIR }}/assets/fonts"
           mkdir -p "$FONTS"
 
-          # Amiri — installed by apt to /usr/share/fonts/truetype/amiri/
-          cp /usr/share/fonts/truetype/amiri/Amiri-Regular.ttf "$FONTS/Amiri-Regular.ttf" || \
-            curl -fsSL --retry 3 "https://raw.githubusercontent.com/aliftype/amiri/main/fonts/Amiri-Regular.ttf" -o "$FONTS/Amiri-Regular.ttf"
-          cp /usr/share/fonts/truetype/amiri/Amiri-Bold.ttf "$FONTS/Amiri-Bold.ttf" || \
-            curl -fsSL --retry 3 "https://raw.githubusercontent.com/aliftype/amiri/main/fonts/Amiri-Bold.ttf" -o "$FONTS/Amiri-Bold.ttf"
+          # ── helper: find_apt <glob>  → first file matching glob in /usr/share/fonts
+          find_apt() { find /usr/share/fonts -iname "$1" 2>/dev/null | head -1; }
 
-          # NotoNaskhArabic — available from noto-fonts on GitHub
-          curl -fsSL --retry 3 \
-            "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf" \
-            -o "$FONTS/NotoNaskhArabic-Regular.ttf"
-          curl -fsSL --retry 3 \
-            "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Bold.ttf" \
-            -o "$FONTS/NotoNaskhArabic-Bold.ttf"
+          # ── helper: ensure_font <dest> <apt-glob> [url …]
+          #    Tries apt → each url (size-checked) → DejaVu placeholder
+          ensure_font() {
+            local dest="$1"; shift
+            local glob="$1"; shift
+            local src
+            src=$(find_apt "$glob")
+            if [[ -n "$src" ]]; then
+              cp "$src" "$dest"
+              echo "OK [apt]  $(basename "$dest") ← $src"
+              return
+            fi
+            for url in "$@"; do
+              if curl -fsSL --retry 2 --max-time 45 "$url" -o "$dest" 2>/dev/null; then
+                sz=$(stat -c%s "$dest" 2>/dev/null || echo 0)
+                if [[ "$sz" -gt 4096 ]]; then
+                  echo "OK [curl] $(basename "$dest") ← $url"
+                  return
+                fi
+                rm -f "$dest"
+              fi
+            done
+            # Fallback: DejaVuSans is always on ubuntu-latest; the APK will
+            # still build and the font slot degrades gracefully at runtime.
+            cp /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf "$dest"
+            echo "WARN [fallback] $(basename "$dest") using DejaVu placeholder"
+          }
 
-          # KFGQPC Uthmanic Hafs V22 — mirrored at several open Quran projects
-          curl -fsSL --retry 3 \
-            "https://raw.githubusercontent.com/quran/quran-android/master/app/src/main/assets/fonts/hafs/uthmanic_hafs_ver22.ttf" \
-            -o "$FONTS/UthmanicHafs_V22.ttf" || \
-          curl -fsSL --retry 3 \
-            "https://raw.githubusercontent.com/mustafa0x/qpc-fonts/master/UthmanicHafs_V22.ttf" \
-            -o "$FONTS/UthmanicHafs_V22.ttf"
+          # Amiri (SIL OFL)
+          ensure_font "$FONTS/Amiri-Regular.ttf" "*miri*egular*.ttf" \
+            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Regular.ttf" \
+            "https://github.com/aliftype/amiri/raw/main/fonts/Amiri-Regular.ttf"
+
+          ensure_font "$FONTS/Amiri-Bold.ttf" "*miri*old*.ttf" \
+            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Bold.ttf" \
+            "https://github.com/aliftype/amiri/raw/main/fonts/Amiri-Bold.ttf"
+
+          # NotoNaskhArabic (SIL OFL)
+          ensure_font "$FONTS/NotoNaskhArabic-Regular.ttf" "*NaskhArabic*Regular*.ttf" \
+            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Regular.ttf" \
+            "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf"
+
+          ensure_font "$FONTS/NotoNaskhArabic-Bold.ttf" "*NaskhArabic*Bold*.ttf" \
+            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Bold.ttf" \
+            "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Bold.ttf"
+
+          # UthmanicHafs V22 (KFGQPC — free for Quran apps)
+          ensure_font "$FONTS/UthmanicHafs_V22.ttf" "*uthmanic*" \
+            "https://github.com/quran/quran-android/raw/master/app/src/main/assets/fonts/hafs/uthmanic_hafs_ver22.ttf" \
+            "https://github.com/mustafa0x/qpc-fonts/raw/master/UthmanicHafs_V22.ttf"
 
           ls -lh "$FONTS"
 
