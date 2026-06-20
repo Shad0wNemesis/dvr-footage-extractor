@@ -25,6 +25,32 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
+// AGP 8+ requires every Android library module to declare a namespace.
+// Older Flutter plugins (e.g. flutter_qiblah) only set `package` in their
+// AndroidManifest.xml.  Read it here and inject it so the build doesn't fail.
+subprojects {
+    afterEvaluate { proj ->
+        if (proj.plugins.hasPlugin('com.android.library')) {
+            def hasNs = false
+            try { hasNs = (proj.android.namespace != null) } catch (Exception ignored) {}
+            if (!hasNs) {
+                def manifestFile = new File(proj.projectDir, 'src/main/AndroidManifest.xml')
+                if (manifestFile.exists()) {
+                    try {
+                        def pkg = new groovy.xml.XmlSlurper(false, false)
+                                .parse(manifestFile)
+                                .'@package'
+                                .text()
+                        if (pkg) proj.android.namespace = pkg
+                    } catch (Exception e) {
+                        logger.warn("Could not auto-set namespace for ${proj.name}: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
