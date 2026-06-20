@@ -1,0 +1,80 @@
+services:
+
+  # ── Noor Al-Quran — Local AI Microservice ──────────────────────────────────
+  #
+  # Endpoints:
+  #   POST http://localhost:8765/api/search      — semantic RAG search
+  #   POST http://localhost:8765/api/recitation  — Tajweed STT evaluation
+  #   POST http://localhost:8765/api/vision      — Mus'haf page detection
+  #   GET  http://localhost:8765/health          — liveness probe
+  #
+  # Usage:
+  #   docker compose up -d          # start in background
+  #   docker compose logs -f        # stream logs
+  #   docker compose down           # stop and remove containers
+  #
+  # First-time model download (one-time, models are cached in ./models/):
+  #   See README.md → "AI Microservice → Model Downloads"
+
+  ai:
+    build:
+      context: ./ai_microservice
+      dockerfile: Dockerfile
+      target: runtime
+    image: noor-al-quran-ai:latest
+    container_name: noor_ai
+    restart: unless-stopped
+
+    ports:
+      - "8765:8765"
+
+    environment:
+      # ── Service config ────────────────────────────────────────────────────
+      HOST: "0.0.0.0"
+      PORT: "8765"
+      DEBUG: "false"
+
+      # ── Model paths (all resolved inside the container at /app/) ──────────
+      EMBEDDING_MODEL_NAME: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+      FAISS_INDEX_PATH: "/app/data/faiss_index/index.faiss"
+      VERSE_METADATA_PATH: "/app/data/faiss_index/metadata.json"
+
+      LLM_MODEL_PATH: "/app/models/llm/model.gguf"
+      LLM_CONTEXT_SIZE: "4096"
+      LLM_MAX_TOKENS: "512"
+      LLM_TEMPERATURE: "0.1"
+      LLM_THREADS: "4"
+
+      WHISPER_MODEL_SIZE: "base"
+      WHISPER_DEVICE: "cpu"
+      WHISPER_COMPUTE_TYPE: "int8"
+
+      YOLO_MODEL_PATH: "/app/models/vision/mushaf_yolov8n.pt"
+      VISION_CONFIDENCE_THRESHOLD: "0.5"
+
+      RAG_TOP_K: "5"
+      RAG_OVER_FETCH_MULTIPLIER: "3"
+
+    volumes:
+      # Models and index are mounted so they survive container rebuilds.
+      # Structure:
+      #   services/models/llm/model.gguf          ← Llama-3.2-3B-Instruct Q4_K_M
+      #   services/models/vision/mushaf_yolov8n.pt ← custom YOLO model
+      #   services/data/faiss_index/index.faiss   ← built by build_faiss_index.py
+      #   services/data/faiss_index/metadata.json ← verse metadata
+      - ./models:/app/models:ro
+      - ./data:/app/data:ro
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s       # Models take ~60–90 s to load on first start
+
+    deploy:
+      resources:
+        limits:
+          memory: 6G           # Llama 3B Q4 ≈ 2.5 GB + Whisper base ≈ 1 GB
+        reservations:
+          memory: 3G
