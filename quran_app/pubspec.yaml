@@ -1,0 +1,116 @@
+name: quran_app
+description: >
+  Noor Al-Quran — A next-generation, local-first, AI-powered Quran application.
+  Free forever. No ads. Open-source spirit.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ── State Management ────────────────────────────────────────
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # ── Navigation ──────────────────────────────────────────────
+  go_router: ^13.2.0
+
+  # ── Local Database (Drift = type-safe SQLite ORM) ───────────
+  # Replaces raw sqflite for compile-time query safety and DAOs.
+  drift: ^2.15.0
+  drift_flutter: ^0.2.1           # Flutter-specific adapters
+  sqlite3_flutter_libs: ^0.5.22   # Bundled sqlite3 native binary
+  path_provider: ^2.1.2
+  path: ^1.9.0
+
+  # ── HTTP Client (AI microservices + Quran.com API) ──────────
+  dio: ^5.4.0
+
+  # ── Audio ───────────────────────────────────────────────────
+  just_audio: ^0.9.36
+  just_audio_background: ^0.0.1-beta.11
+  audio_session: ^0.1.18
+
+  # ── Prayer Times ────────────────────────────────────────────
+  adhan: ^2.0.0+1
+
+  # ── Qibla & Sensors ─────────────────────────────────────────
+  flutter_qiblah: ^2.1.1
+  sensors_plus: ^4.0.2
+
+  # ── Location ────────────────────────────────────────────────
+  geolocator: ^10.1.0
+
+  # ── Persistent KV Storage ───────────────────────────────────
+  shared_preferences: ^2.2.3
+
+  # ── UI Components ───────────────────────────────────────────
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  lottie: ^3.0.0
+  percent_indicator: ^4.2.3
+  flutter_animate: ^4.3.0
+
+  # ── Camera / AR / Vision ────────────────────────────────────
+  camera: ^0.10.5+9
+  image: ^4.1.7                   # In-isolate frame processing
+
+  # ── Audio Recording (Tajweed recitation checker) ─────────────
+  record: ^5.1.0                  # Cross-platform mic recording (WAV/M4A)
+
+  # ── Utilities ───────────────────────────────────────────────
+  connectivity_plus: ^5.0.2
+  intl: ^0.19.0
+  collection: ^1.18.0
+  equatable: ^2.0.5
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  rxdart: ^0.27.7
+  logger: ^2.0.2+1
+  uuid: ^4.3.3                    # Stable bookmark / note IDs
+  crypto: ^3.0.3                  # Asset integrity verification
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  # Drift code generation
+  drift_dev: ^2.15.0
+  # Riverpod code generation
+  riverpod_generator: ^2.3.9
+  # Data class generation
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - assets/database/
+    - assets/json/
+
+  fonts:
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+    - family: UthmanicHafs
+      fonts:
+        - asset: assets/fonts/UthmanicHafs_V22.ttf
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/fonts/NotoNaskhArabic-Regular.ttf
+        - asset: assets/fonts/NotoNaskhArabic-Bold.ttf
+          weight: 700
