@@ -39,14 +39,14 @@ dependencies:
   audio_session: ^0.1.18
 
   # ── Prayer Times ────────────────────────────────────────────
-  adhan: ^1.0.3
+  adhan: ^2.0.0+1
 
   # ── Qibla & Sensors ─────────────────────────────────────────
   flutter_qiblah: ^2.1.1
   sensors_plus: ^4.0.2
 
   # ── Location ────────────────────────────────────────────────
-  geolocator: ^11.0.0
+  geolocator: ^10.1.0
 
   # ── Persistent KV Storage ───────────────────────────────────
   shared_preferences: ^2.2.3

@@ -60,26 +60,33 @@ jobs:
         run: flutter pub get
 
       # ── Download required assets (fonts + full Quran seed data) ──────────────
-      - name: Download Arabic fonts
+      - name: Install Arabic fonts
         run: |
           FONTS="${{ env.APP_DIR }}/assets/fonts"
           mkdir -p "$FONTS"
 
+          # Amiri and NotoNaskhArabic from Google Fonts GitHub mirrors
           curl -fsSL --retry 3 \
-            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Regular.ttf" \
+            "https://raw.githubusercontent.com/aliftype/amiri/main/fonts/Amiri-Regular.ttf" \
             -o "$FONTS/Amiri-Regular.ttf"
           curl -fsSL --retry 3 \
-            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Bold.ttf" \
+            "https://raw.githubusercontent.com/aliftype/amiri/main/fonts/Amiri-Bold.ttf" \
             -o "$FONTS/Amiri-Bold.ttf"
           curl -fsSL --retry 3 \
-            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Regular.ttf" \
+            "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf" \
             -o "$FONTS/NotoNaskhArabic-Regular.ttf"
           curl -fsSL --retry 3 \
-            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Bold.ttf" \
+            "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Bold.ttf" \
             -o "$FONTS/NotoNaskhArabic-Bold.ttf"
+
+          # KFGQPC Uthmanic Hafs V22
           curl -fsSL --retry 3 \
-            "https://github.com/quran/quran-ios/raw/main/Quran/Assets.xcassets/Fonts/KFGQPC-Uthmanic-Script-Hafs-Regular.ttf" \
+            "https://raw.githubusercontent.com/quran/quran-android/master/app/src/main/assets/fonts/hafs/uthmanic_hafs_ver22.ttf" \
+            -o "$FONTS/UthmanicHafs_V22.ttf" || \
+          curl -fsSL --retry 3 \
+            "https://raw.githubusercontent.com/mustafa0x/qpc-fonts/master/UthmanicHafs_V22.ttf" \
             -o "$FONTS/UthmanicHafs_V22.ttf"
+
           ls -lh "$FONTS"
 
       - name: Download full Quran seed data

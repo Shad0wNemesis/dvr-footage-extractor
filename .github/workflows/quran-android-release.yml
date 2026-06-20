@@ -73,32 +73,34 @@ jobs:
 
       # ── Download required assets (fonts + full Quran seed data) ──────────────
       #
-      # Fonts are not committed to the repository (binary files, ~3 MB total).
-      # The full ayahs.json (6,236 verses) replaces the stub included in the repo.
-      - name: Download Arabic fonts
+      # Amiri and NotoNaskhArabic come from Ubuntu packages (fast, reliable).
+      # UthmanicHafs is downloaded from a public GitHub mirror.
+      - name: Install Arabic fonts
         run: |
+          sudo apt-get install -y fonts-amiri fonts-noto-core 2>/dev/null || true
           FONTS="${{ env.APP_DIR }}/assets/fonts"
           mkdir -p "$FONTS"
 
-          # Amiri (SIL Open Font License — aliftype/amiri)
-          curl -fsSL --retry 3 \
-            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Regular.ttf" \
-            -o "$FONTS/Amiri-Regular.ttf"
-          curl -fsSL --retry 3 \
-            "https://github.com/aliftype/amiri/releases/download/1.000/Amiri-Bold.ttf" \
-            -o "$FONTS/Amiri-Bold.ttf"
+          # Amiri — installed by apt to /usr/share/fonts/truetype/amiri/
+          cp /usr/share/fonts/truetype/amiri/Amiri-Regular.ttf "$FONTS/Amiri-Regular.ttf" || \
+            curl -fsSL --retry 3 "https://raw.githubusercontent.com/aliftype/amiri/main/fonts/Amiri-Regular.ttf" -o "$FONTS/Amiri-Regular.ttf"
+          cp /usr/share/fonts/truetype/amiri/Amiri-Bold.ttf "$FONTS/Amiri-Bold.ttf" || \
+            curl -fsSL --retry 3 "https://raw.githubusercontent.com/aliftype/amiri/main/fonts/Amiri-Bold.ttf" -o "$FONTS/Amiri-Bold.ttf"
 
-          # NotoNaskhArabic (SIL Open Font License — notofonts/arabic)
+          # NotoNaskhArabic — available from noto-fonts on GitHub
           curl -fsSL --retry 3 \
-            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Regular.ttf" \
+            "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf" \
             -o "$FONTS/NotoNaskhArabic-Regular.ttf"
           curl -fsSL --retry 3 \
-            "https://github.com/notofonts/arabic/releases/download/NotoNaskhArabic-v2.014/NotoNaskhArabic-Bold.ttf" \
+            "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Bold.ttf" \
             -o "$FONTS/NotoNaskhArabic-Bold.ttf"
 
-          # KFGQPC Uthmanic Hafs — freely distributed by King Fahd Complex
+          # KFGQPC Uthmanic Hafs V22 — mirrored at several open Quran projects
           curl -fsSL --retry 3 \
-            "https://github.com/quran/quran-ios/raw/main/Quran/Assets.xcassets/Fonts/KFGQPC-Uthmanic-Script-Hafs-Regular.ttf" \
+            "https://raw.githubusercontent.com/quran/quran-android/master/app/src/main/assets/fonts/hafs/uthmanic_hafs_ver22.ttf" \
+            -o "$FONTS/UthmanicHafs_V22.ttf" || \
+          curl -fsSL --retry 3 \
+            "https://raw.githubusercontent.com/mustafa0x/qpc-fonts/master/UthmanicHafs_V22.ttf" \
             -o "$FONTS/UthmanicHafs_V22.ttf"
 
           ls -lh "$FONTS"
